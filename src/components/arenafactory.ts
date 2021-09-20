@@ -1,8 +1,6 @@
 import { Arena } from "../arena";
-import { DynamicMap } from "./dynamicmap";
+import { arenaType, DynamicMap, keys } from "./dynamicmap";
 
-type keys = keyof typeof DynamicMap.arenaMap;
-type arenaType = typeof DynamicMap.arenaMap[keys];
 type ExtractInstanceType<T> = T extends new() => infer R? R : Arena;
 
 export class ArenaFactory {

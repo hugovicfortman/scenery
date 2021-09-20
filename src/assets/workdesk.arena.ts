@@ -137,7 +137,7 @@ export class WorkdeskArena extends Arena {
         }
     }
 
-    animateSteam = (): void => {        
+    animateSteam = (): void => {
         // Animate the steam effect...
         let sc = this.scenery.world.steam.current, sl = this.scenery.world.steam.last;
         const steam = this.scenery.world.steam.incident[sc], lastSteam = this.scenery.world.steam.incident[sl];

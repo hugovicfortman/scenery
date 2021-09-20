@@ -1,14 +1,15 @@
 import { CubeArena } from "../assets/cube.arena";
 import { WorkdeskArena } from '../assets/workdesk.arena';
 
+
+export type keys = keyof typeof DynamicMap.arenaMap;
+export type arenaType = typeof DynamicMap.arenaMap[keys];
+
 export class DynamicMap {
 
-  static map = {
+  static arenaMap = {
     cube: CubeArena,
     workdesk: WorkdeskArena
   };
-  static indices = Object.keys(DynamicMap.map);
-  static get arenaMap() {
-    return DynamicMap.map;
-  }
+  static indices = Object.keys(DynamicMap.arenaMap);
 }
