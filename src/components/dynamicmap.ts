@@ -1,5 +1,6 @@
 import { CubeArena } from "../arenas/cube.arena";
 import { WorkdeskArena } from '../arenas/workdesk.arena';
+import { MyNewArena } from '../arenas/mynew.arena';
 
 
 export type keys = keyof typeof DynamicMap.arenaMap;
@@ -9,7 +10,8 @@ export class DynamicMap {
 
   static arenaMap = {
     cube: CubeArena,
-    workdesk: WorkdeskArena
+    workdesk: WorkdeskArena,
+    newarena: MyNewArena
   };
   static indices = Object.keys(DynamicMap.arenaMap);
 }

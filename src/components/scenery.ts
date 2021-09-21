@@ -54,8 +54,13 @@ export class Scenery {
                         currentArenaIndex = arenaIndex;
                     }
                 };
+                this.getArenaIndex = (): string[] => {
+                    return factory.getArenaIndex();
+                }
             });
     }
+
+    getArenaIndex = (): string[] => []
 
     private finishLoading(arena: Arena): Promise<void> {
         return new Promise((resolve, reject) => {

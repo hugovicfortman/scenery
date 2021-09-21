@@ -16,3 +16,7 @@ export function getArena(index: number, container: HTMLElement): ExtractInstance
 export function getArenaCount(): number {
   return DynamicMap.indices.length;
 }
+
+export function getArenaIndex(): string[] {
+  return DynamicMap.indices;
+}
