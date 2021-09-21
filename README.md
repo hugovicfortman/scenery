@@ -19,7 +19,9 @@ This project which can also be used as a boilerplate is built with Webpack 5 + T
 #### Step By Step
  1. Clone the repository using
 
-        git clone https://github.com/hugovicfortman/scenery.git
+```shell
+git clone https://github.com/hugovicfortman/scenery.git
+```
 
  2. Navigate into the scenery folder using `cd scenery`
 
@@ -75,6 +77,11 @@ To add an Arena,
 2. The class should extend `Arena` in order to gain the important wrapper properties with which the scenery intracts with it.
 
 3. Implement the recommended methods and properties from the base class.
+
+4. Implement paint and update logic in init and update methods respectively.
+
+> If your `Arena` object needs to load external resources, for example, images, json, or obj files, set the `needsLoading` property to `true`.
+> This will enable the scenery's manager to monitor the loading, and wait till all files are loaded before transitioning to expose the new arena.
 
 
 The new class would take the following form;
@@ -135,4 +142,4 @@ where **2** is the index of your `Arena` in the `arenaMap`.
 
 To access the index of arenas, you can use the `getArenaIndex()` method exposed by the scenery. This returns a string array containing the keys for `arenaMap` in the order which they are declared in the dictionary literal.
 
-This method would return an empty string array if the arena factory has not yet been loaded by the `setup()` method.
+> The `getArenaIndex()` method would return an empty string array if the arena factory has not yet been loaded by the `setup()` method.
