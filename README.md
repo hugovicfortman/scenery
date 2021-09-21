@@ -1,22 +1,33 @@
 # Scenery
 
-A dynamic 3D environment loader built with Webpack 5 + TypeScript + Jest + Sass + ESLint + Threejs.
+A dynamic 3D environment loader using three.js and typescript.
+
+This project which can also be used as a boilerplate is built with Webpack 5 + TypeScript + Jest + Sass + ESLint + Threejs.
+
+## Table of Contents
+ - Installation
+     - Step By step
+     - Bundle
+ - How it Works
+ - Usage
+ - Creating Your Own Arenas
+ - Loading New Arenas
 
 
 ## Installation:
 
 #### Step By Step
-1. Clone the repository using
+ 1. Clone the repository using
 
         git clone https://github.com/hugovicfortman/scenery.git
 
-2. Navigate into the scenery folder using `cd scenery`
+ 2. Navigate into the scenery folder using `cd scenery`
 
-3. Install the dependencies using `npm i`
+ 3. Install the dependencies using `npm i`
 
-4. Start the project using `npm start`
+ 4. Start the project using `npm start`
 
-#### 
+#### Bundle
 You can simply paste this into your terminal
 
     git clone https://github.com/hugovicfortman/scenery.git
@@ -40,22 +51,22 @@ Each `Arena` has its `scene`, `camera`, and `renderer`, and runs its separate `l
 
 `Arena` can be loaded directly into the scenery, but it is advisable to use the `ArenaFactory` in order to unbundle the main package from the Arenas packages, which may be heavy, depending on the complexity and size of your render and resources.
 
-#### Process
+## Usage
 
-1. Import the scenery class.
+ 1. Import the scenery class.
 
-2. Create a `Scenery` object.
+ 2. Create a `Scenery` object.
 
-3. Run the `Setup()` method on scenery to asynchronously import `ArenaFactory` when you need it.
+ 3. Run the `Setup()` method on scenery to asynchronously import `ArenaFactory` when you need it.
 
-4. `ArenaFactory` loads the `Arena` libraries into memory
+ 4. `ArenaFactory` loads the `Arena` libraries into memory
 
-5. Run `setArena()`, passing a number which represents the zero base index of the arena to load into the scenery. e.g. `setArena(1)`
+ 5. Run `setArena()`, passing a number which represents the zero base index of the arena to load into the scenery. e.g. `setArena(1)`
 
 When you set an Arena,  the Scenery loads the assets for that arena before transitioning by fading into the new arena.
 
 
-### Creating your own Arenas
+## Creating your own Arenas
 
 To add an Arena, 
 
@@ -112,7 +123,7 @@ The new class would take the following form;
 
 
 
-### Loading New Arenas
+## Loading New Arenas
 
 To make the your new arena loadable, simply import and add it to the static `arenaMap` dictionary variable in **/components/dynamicmap.ts** with its unique key.
 
