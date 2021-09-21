@@ -8,7 +8,6 @@ export class Scenery {
     private currentArena: Arena;
     private incomingArena: Arena;
     private outgoingArena: Arena;
-    private loadingArena = false;
     private arenaCache: Arena[] = [];
     private preloadStyleContent = 'canvas.preload{position:fixed;top:0;left:0;z-index:-1}';
 
@@ -32,14 +31,9 @@ export class Scenery {
 
             // Loading...
             DefaultLoadingManager.onProgress = ( item, loaded, total ) => {
+                console.log('loading manager progress triggered');
                 // All textures are done loading when loaded === total...
-                if(loaded === total)
-                {
-                    console.log('we got here...');
-                    this.loadingArena = false;
-                } else {
-                    this.loadingArena = true;
-                }
+                this.incomingArena.loaded = (loaded === total);
             };
             this.initialize();
         } else {
@@ -47,6 +41,29 @@ export class Scenery {
             const warning = Detector.getWebGLErrorMessage();
             this.container.appendChild(warning);
         }
+    }
+
+    private finishLoading(arena: Arena): Promise<void> {
+        return new Promise((resolve, reject) => {
+            if(arena.needsLoading) {
+                let loadingTime = 0;
+                const intervalTime = 500;
+                const wait = setInterval(() => {
+                    if(arena.loaded){
+                        clearInterval(wait);
+                        resolve()
+                    } else {
+                        loadingTime += intervalTime;
+                        if(loadingTime >= arena.loadingTimeout) {
+                            clearInterval(wait);
+                            reject(); // Took too long to load
+                        }
+                    }
+                }, intervalTime);
+            } else {
+                resolve();
+            }
+        });
     }
 
     // Receives an Arena Name and an Arena Object to create within the scenery
@@ -60,40 +77,46 @@ export class Scenery {
             this.incomingArena = this.arenaCache[arenaIndex];
             console.log('retrieval');
         }
-        
-        if(this.currentArena !== undefined) {
-            this.currentArena.packup();
-            console.log('positive');
-        }
     }
 
+    /// Transition from an existing arena to the newly declared incoming arena
     transition(): void {
         if(this.incomingArena !== undefined) {
-            console.log('transition called on incoming Arena');
-            this.outgoingArena = this.currentArena;
+            if(this.currentArena !== undefined) {
+                this.outgoingArena = this.currentArena;
+            }
             this.currentArena = this.incomingArena;
-            console.log(this.currentArena);
             this.currentArena.init();
             this.currentArena.canvas.classList.add('preload');
-            // Execute whatever transition was meant to move us to the next screen.
-            this.fadeOutArena(this.outgoingArena, 1)
-                .then( () => {
-                    console.log('transition fadeout happened');
-                    this.outgoingArena.destroy();
-                    this.currentArena.canvas.classList.remove('preload');
-                });
+            this.finishLoading(this.incomingArena)
+                .then(() => {
+                    if(this.outgoingArena !== undefined) {
+                        this.outgoingArena.packup();
+                    }
+                    // Execute whatever transition was meant to move us to the next screen.
+                    this.fadeOutArena(this.outgoingArena, 1)
+                        .then( (canDestroy) => { // If fadeout returns true, destroy old arena
+                            if(canDestroy) {
+                                this.outgoingArena.destroy();
+                            }
+                            this.currentArena.canvas.classList.remove('preload');
+                        });
+                })
+                .catch((e) => console.log(e));
         }
     }
 
-    private fadeOutArena(e: Arena, time: number): Promise<void> {
+    private fadeOutArena(e: Arena, time: number): Promise<boolean> {
+        console.log('fadeout called on outgoing Arena');
         if(e != undefined) {
             return this.fadeOut(e.canvas, time);
         }else {
-            return new Promise(() => null)
+            console.log('no outgoing Arena');
+            return new Promise((resolve) => resolve(false))
         }
     }
 
-    fadeOut(e: HTMLElement, time: number): Promise<void> {
+    fadeOut(e: HTMLElement, time: number): Promise<boolean> {
         const InitialOpacity = Number(e.style.opacity) || 1;
         return new Promise((resolve) => {
             let opacity = InitialOpacity;
@@ -104,7 +127,8 @@ export class Scenery {
                 } else {
                     clearInterval(fading);
                     e.style.opacity = "0";
-                    resolve();
+                    console.log('outgoing Arena faded out');
+                    resolve(true);
                 }
             }, time / 60);
         });

@@ -29,7 +29,6 @@ export class WorkdeskArena extends Arena {
 
     constructor( container: HTMLElement ) {
         super(container);
-
     }
 
 
@@ -59,12 +58,16 @@ export class WorkdeskArena extends Arena {
         this.firstPaint(scene);
         this.drawSteam(scene);
         // drawSteamReflection(scene);
-        this.scenery.world.steam.animate = this.animateSteam;
+
+        if(!this.isReinitialized) {
+            this.scenery.world.steam.animate = this.animateSteam;
+        }
 
         this.setCamera(camera);
         this.setScene(scene);
         this.setRenderer(renderer);
         this.placeRenderer();
+
 
         // Declare Event Listeners to override base class
         // Here we can void or override any events we don't want to see...
@@ -75,6 +78,8 @@ export class WorkdeskArena extends Arena {
         // Setup Event Listeners in base class
         this.setEventListeners();
     };
+
+    needsLoading = true;
 
     firstPaint = (scene: Scene): void => {
         const flatSceneGeometry = new PlaneGeometry(700, 500);

@@ -1,4 +1,4 @@
-import { Camera, Renderer, Scene, PerspectiveCamera } from "three";
+import { Camera, WebGLRenderer, Scene, PerspectiveCamera, Mesh, } from "three";
 
 export abstract class Arena {
 
@@ -8,6 +8,11 @@ export abstract class Arena {
     public get isReinitialized(): boolean {
         return this._isReinitialized
     }
+
+    abstract needsLoading: boolean;
+    loaded = false;
+    loadingTimeout = 30000;
+
     // Motion for a perspective
     moveBackward = false;
     moveForward = false;
@@ -34,7 +39,7 @@ export abstract class Arena {
     };
 
     scene: Scene;
-    renderer: Renderer;
+    renderer: WebGLRenderer;
     camera: Camera;
 
     // Constructor setup with crucial objects for every canvas
@@ -53,7 +58,7 @@ export abstract class Arena {
     setScene = (scene: Scene): void => {
         this.scene = scene;
     }
-    setRenderer = (renderer: Renderer): void => {
+    setRenderer = (renderer: WebGLRenderer): void => {
         this.renderer = renderer;
     }
     setCamera = (camera: Camera): void => {
@@ -194,6 +199,25 @@ export abstract class Arena {
         this.clearEventListeners();
     }
     destroy(): void {
+        this.renderer.dispose()
+
+        // dispose all geometry as well to kill persistance
+        this.scene.traverse(object => {
+            if(object instanceof Mesh) {
+                object.geometry.dispose();
+                if (object.material.isMaterial) {
+                    object.material.dispose();
+                } else {
+                    // an array of materials
+                    for (const material of object.material) {
+                        material.dispose()
+                    }
+                }
+            }
+        })
+
+        this.renderer.forceContextLoss(); // Save on GL resources across Arenas
+        this.scene.clear();
         this.renderer.domElement.parentNode.removeChild(this.renderer.domElement);
         this.isInitialized = false;
         this._isReinitialized = true;

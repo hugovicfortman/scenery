@@ -8,6 +8,11 @@ export class ArenaFactory {
     return new DynamicMap.arenaMap[k](container);
   }
 }
+
 export function getArena(index: number, container: HTMLElement): ExtractInstanceType<arenaType> {
-  return ArenaFactory.getArena(DynamicMap.indices[index], container)
+  return ArenaFactory.getArena((DynamicMap.indices[index] as keys), container)
+}
+
+export function getArenaCount(): number {
+  return DynamicMap.indices.length;
 }

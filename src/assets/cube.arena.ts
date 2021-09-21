@@ -51,6 +51,8 @@ export class CubeArena extends Arena {
         this.setEventListeners();
     };
 
+    needsLoading = false;
+
     // Updates scene...
     update = ( time: number ): void => {
 

@@ -5,27 +5,28 @@ const container = document.body;
 const scenery = new Scenery();
 scenery.init(container);
 
-// document.querySelector('#transition')
-//     .addEventListener('click', () => { 
-//         scenery.setArena(new WorkdeskArena(container));
-//         scenery.transition();
-//     });
-
 // create unique id
 // "id" + Math.random().toString(16).slice(2);
 
-document.querySelector('#reverse')
-    .addEventListener('click', () => { 
-        let currentArenaIndex = 0;
-        const maxArenaIndex = 1;
+let setScene = (sceneIndex: number): void => console.log(sceneIndex)
+const setup = (): void => {
         import("./components/arenafactory").then(factory => {
-                setInterval(() => {
-                    scenery.setArena(currentArenaIndex, factory.getArena(currentArenaIndex, container));
-                    scenery.transition();
-                    currentArenaIndex++;
-                    if( currentArenaIndex > maxArenaIndex) {
-                        currentArenaIndex = 0;
+                let currentArenaIndex = 0;
+                scenery.setArena(currentArenaIndex, factory.getArena(currentArenaIndex, container));
+                scenery.transition();
+                const arenas = Array.from(Array(factory.getArenaCount()).keys())
+                setScene = (arenaIndex: number) => {
+                    if(arenaIndex in arenas && arenaIndex != currentArenaIndex) {
+                        scenery.setArena(arenaIndex, factory.getArena(arenaIndex, container));
+                        scenery.transition();
+                        currentArenaIndex = arenaIndex;
                     }
-                }, 20000); // Toggle Arena every 20 seconds
+                };
             });
-    });
+    };
+
+document.querySelector('#transition')
+    .addEventListener('click', () => setScene(1), false);
+document.querySelector('#setup')
+    .addEventListener('click', setup, false);
+
