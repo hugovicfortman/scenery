@@ -185,7 +185,7 @@ export abstract class Arena {
         this.mouse.coordinates.y = ( event.clientY - windowHalfY );
 
         this.mouse.percentage.x = this.mouse.coordinates.x / (window.innerWidth / 2);
-        this.mouse.percentage.y = this.mouse.coordinates.x / (window.innerHeight / 2);
+        this.mouse.percentage.y = this.mouse.coordinates.y / (window.innerHeight / 2);
 
     };
 
