@@ -39,17 +39,17 @@ export class Scenery {
         }
     }
 
-    setScene = (sceneIndex: number): void => console.log(sceneIndex)
+    setArena = (sceneIndex: number): void => console.log(sceneIndex)
 
     setup(): void {
         import("./arenafactory").then(factory => {
                 let currentArenaIndex = 0;
-                this.setArena(currentArenaIndex, factory.getArena(currentArenaIndex, this.container));
+                this.loadArena(currentArenaIndex, factory.getArena(currentArenaIndex, this.container));
                 this.transition();
                 const arenas = Array.from(Array(factory.getArenaCount()).keys())
-                this.setScene = (arenaIndex: number) => {
+                this.setArena = (arenaIndex: number) => {
                     if(arenaIndex in arenas && arenaIndex != currentArenaIndex) {
-                        this.setArena(arenaIndex, factory.getArena(arenaIndex, this.container));
+                        this.loadArena(arenaIndex, factory.getArena(arenaIndex, this.container));
                         this.transition();
                         currentArenaIndex = arenaIndex;
                     }
@@ -83,7 +83,7 @@ export class Scenery {
     // Receives an Arena Name and an Arena Object to create within the scenery
     // Objects are stored in a dictionary with the name, and retreived if called
     // again during runtime.
-    setArena(arenaIndex: number, arena: Arena): void {
+    loadArena(arenaIndex: number, arena: Arena): void {
         if(this.arenaCache[arenaIndex] == undefined) {
             this.incomingArena = arena;
             this.arenaCache[arenaIndex] = arena;
@@ -94,7 +94,7 @@ export class Scenery {
     }
 
     /// Transition from an existing arena to the newly declared incoming arena
-    transition(): void {
+    private transition(): void {
         if(this.incomingArena !== undefined) {
             if(this.currentArena !== undefined) {
                 this.outgoingArena = this.currentArena;
@@ -130,7 +130,7 @@ export class Scenery {
         }
     }
 
-    fadeOut(e: HTMLElement, time: number): Promise<boolean> {
+    private fadeOut(e: HTMLElement, time: number): Promise<boolean> {
         const InitialOpacity = Number(e.style.opacity) || 1;
         return new Promise((resolve) => {
             let opacity = InitialOpacity;
