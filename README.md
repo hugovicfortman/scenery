@@ -43,11 +43,70 @@ Each `Arena` has its `scene`, `camera`, and `renderer`, and runs its separate `l
 #### Process
 
 1. Import the scenery class.
+
 2. Create a `Scenery` object.
+
 3. Run the `Setup()` to asynchronously import `ArenaFactory` when you need it.
+
 4. `ArenaFactory` loads the `Arena` libraries into memory
+
 5. Run `setArena()`, passing a number which represents the index of the arena to load the current Arena.
 
-When you set an `Arena`,  the `Scenery` loads the assets for that arena before transitioning by fading into the new arena.
+When you set an Arena,  the Scenery loads the assets for that arena before transitioning by fading into the new arena.
 
+
+### Creating your own Arenas
+
+To add an Arena, 
+
+1. Create the Typescript file in the **arenas** directory. The convention of using *.arena.ts filename is not important at this time, but may be maintained.
+
+2. The class should extend `Arena` in order to gain the important wrapper properties with which the scenery intracts with it.
+
+3. Implement the recommended functions and properties from the base class.
+
+
+The new class would take the following form;
+
+
+    import { Scene, PerspectiveCamera, WebGLRenderer } from "three";
+    import { Arena } from "../components/arena";
+
+    export class MyNewArena extends Arena {
+        needsLoading: boolean;
+        init(): void {
+            if(this.isInitialized) {
+                return;
+            }else{
+                super.initialize();
+            }
+            const scene = new Scene();
+            const aspectRatio = window.innerWidth /     window.innerHeight;
+            const camera = new PerspectiveCamera(75, aspectRatio, 1, 10000 );
+            const renderer = new WebGLRenderer({ antialias: true})
+
+            this.setCamera(camera);
+            this.setScene(scene);
+            this.setRenderer(renderer);
+            this.placeRenderer();
+
+
+            // Declare Event Listeners to override base class
+            // Here we can void or override any events we don't want to see...
+            this.onKeyDown = 
+            this.onMouseDown = 
+            this.onKeyUp = () => null
+
+            // Setup Event Listeners in base class
+            this.setEventListeners();
+        }
+        update(time: number): void {
+            // replace with your own implementation of the update logic...
+            throw new Error(`Method not implemented.${time}`);
+        }
+
+        gameLoop = (time: number): void => {
+            super.gameLoop(time);
+        };
+    }
 
