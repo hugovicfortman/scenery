@@ -7,6 +7,8 @@ const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const CopyPlugin = require('copy-webpack-plugin');
 const ESLintPlugin = require('eslint-webpack-plugin');
 
+const isProd = process.env.NODE_ENV === 'production';
+
 module.exports = {
   entry: './src/index.ts',
   mode: 'development',
@@ -60,7 +62,11 @@ module.exports = {
     }),
     new CleanWebpackPlugin(),
     new HtmlWebpackPlugin({
-      template: './src/index.html'
+      template: './src/index.html',
+      minify: {
+          collapseWhitespace: isProd,
+          removeComments: isProd
+      }
     }),
     new ForkTsCheckerWebpackPlugin(),
     new CopyPlugin({
