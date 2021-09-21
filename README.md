@@ -34,7 +34,7 @@ This is an abstraction layer that wraps around and manages loading and transitio
 
 Each Threejs render is called an `Arena`.
 
-Each `Arena` has its `scene`, `camera`, and `renderer`, and runs its separate `loop`, `update` and `render` functions which are independent of other Arenas in the scenery.
+Each `Arena` has its `scene`, `camera`, and `renderer`, and runs its separate `loop`, `update` and `render` methods which are independent of other Arenas in the scenery.
 
 `ArenaFactory` is a static class that helps us load an `Arena`, given its numerical index in a collection of Arenas.
 
@@ -46,11 +46,11 @@ Each `Arena` has its `scene`, `camera`, and `renderer`, and runs its separate `l
 
 2. Create a `Scenery` object.
 
-3. Run the `Setup()` to asynchronously import `ArenaFactory` when you need it.
+3. Run the `Setup()` method on scenery to asynchronously import `ArenaFactory` when you need it.
 
 4. `ArenaFactory` loads the `Arena` libraries into memory
 
-5. Run `setArena()`, passing a number which represents the index of the arena to load the current Arena.
+5. Run `setArena()`, passing a number which represents the zero base index of the arena to load into the scenery. e.g. `setArena(1)`
 
 When you set an Arena,  the Scenery loads the assets for that arena before transitioning by fading into the new arena.
 
@@ -63,7 +63,7 @@ To add an Arena,
 
 2. The class should extend `Arena` in order to gain the important wrapper properties with which the scenery intracts with it.
 
-3. Implement the recommended functions and properties from the base class.
+3. Implement the recommended methods and properties from the base class.
 
 
 The new class would take the following form;
@@ -110,3 +110,18 @@ The new class would take the following form;
         };
     }
 
+
+
+### Loading New Arenas
+
+To make the your new arena loadable, simply import and add it to the static `arenaMap` dictionary variable in **/components/dynamicmap.ts** with its unique key.
+
+`ArenaFactory` uses the literal key => value arangement to index all arenas, therefore, to load it into your scenery, you can simply call that index as follows;
+
+    scenery.setArena(2)
+
+where **2** is the index of your `Arena` in the `arenaMap`.
+
+To access the index of arenas, you can use the `getArenaIndex()` method exposed by the scenery. This returns a string array containing the keys for `arenaMap` in the order which they are declared in the dictionary literal.
+
+This method would return an empty string array if the arena factory has not yet been loaded by the `setup()` method.
