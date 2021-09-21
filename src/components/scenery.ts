@@ -13,14 +13,10 @@ export class Scenery {
 
     init( container: HTMLElement ): void {
         this.container = container;
-        this.setup();
+        this.initialize();
     }
 
     private initialize(): void {
-        this.currentArena = undefined;
-    }
-
-    setup(): void {
         // Startup...
         if(Detector.webgl)
         {
@@ -35,12 +31,30 @@ export class Scenery {
                 // All textures are done loading when loaded === total...
                 this.incomingArena.loaded = (loaded === total);
             };
-            this.initialize();
+            this.currentArena = undefined;
         } else {
             // If WebGL is not supported...
             const warning = Detector.getWebGLErrorMessage();
             this.container.appendChild(warning);
         }
+    }
+
+    setScene = (sceneIndex: number): void => console.log(sceneIndex)
+
+    setup(): void {
+        import("./arenafactory").then(factory => {
+                let currentArenaIndex = 0;
+                this.setArena(currentArenaIndex, factory.getArena(currentArenaIndex, this.container));
+                this.transition();
+                const arenas = Array.from(Array(factory.getArenaCount()).keys())
+                this.setScene = (arenaIndex: number) => {
+                    if(arenaIndex in arenas && arenaIndex != currentArenaIndex) {
+                        this.setArena(arenaIndex, factory.getArena(arenaIndex, this.container));
+                        this.transition();
+                        currentArenaIndex = arenaIndex;
+                    }
+                };
+            });
     }
 
     private finishLoading(arena: Arena): Promise<void> {
