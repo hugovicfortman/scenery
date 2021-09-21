@@ -1,4 +1,4 @@
-import { Arena } from "../arena";
+import { Arena } from "./arena";
 import { arenaType, DynamicMap, keys } from "./dynamicmap";
 
 type ExtractInstanceType<T> = T extends new() => infer R? R : Arena;

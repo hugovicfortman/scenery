@@ -1,5 +1,5 @@
-import { CubeArena } from "../assets/cube.arena";
-import { WorkdeskArena } from '../assets/workdesk.arena';
+import { CubeArena } from "../arenas/cube.arena";
+import { WorkdeskArena } from '../arenas/workdesk.arena';
 
 
 export type keys = keyof typeof DynamicMap.arenaMap;

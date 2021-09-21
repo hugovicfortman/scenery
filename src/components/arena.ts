@@ -37,6 +37,9 @@ export abstract class Arena {
         y:50,
         z:-200
     };
+    player = {
+        jumpSpeed: 350
+    }
 
     scene: Scene;
     renderer: WebGLRenderer;
@@ -48,6 +51,7 @@ export abstract class Arena {
 
     // Initializes this scene
     abstract init(): void;
+    
     initialize(): void {
         this.isInitialized = true;
     }
@@ -88,7 +92,11 @@ export abstract class Arena {
         this.render();
     }
 
-    // Maintains size of renderer...
+    /**
+     * Maintains size of renderer
+     * Defaults to window size
+     * Override this method to choose your custom size
+     */
     onWindowResize = (): void => {
         const width = window.innerWidth;
         const height = window.innerHeight;
@@ -99,10 +107,16 @@ export abstract class Arena {
         }
     };
 
+    /**
+     * Action to take when a key is pressed,
+     *  uses WASD and cursor keys settings by default
+     *  also sets a boolean for jumping action using space in fp games
+     * @param event the keyboard event
+     */
     onKeyDown = ( event: KeyboardEvent ): void => {
         switch ( event.key ) {
             case "Space": // space
-                if ( this.canJump === true ) this.velocity.y += 350;
+                if ( this.canJump === true ) this.velocity.y += this.player.jumpSpeed;
                 this.canJump = false;
                 break;
             case "Up": // up
@@ -123,6 +137,12 @@ export abstract class Arena {
                 break;
         }
     };
+
+    /**
+     * Action to take when a key is debounced,
+     *  uses WASD and cursor keys settings by default
+     * @param event the keyboard event
+     */
     onKeyUp = ( event: KeyboardEvent ): void => {
         switch ( event.key ) {
             case "Up": // up
@@ -144,10 +164,18 @@ export abstract class Arena {
         }
     };
 
+    /**
+     * Action to take when a mouse is clicked, or screen tapped
+     * @param event the event object
+     */
     onMouseDown = ( event: MouseEvent ): void => { 
         event.preventDefault();
     };
 
+    /**
+     * Action to take when a mouse moves on the sreen
+     * @param event the event object for either a touch or mouse movement
+     */
     onMouseMove = ( event: Touch | MouseEvent ): void => {
 
         const windowHalfX = window.innerWidth >> 1;
@@ -161,18 +189,35 @@ export abstract class Arena {
 
     };
 
+    /**
+     * Action to take at the beginning of touch/swipe of device screen
+     * @param event the event object
+     */
     onTouchStart = ( event: TouchEvent ): void => { 
         event.preventDefault();
     };
+
+    /**
+     * Action to take during a swipe of the device screen
+     * @param event the event object
+     */
     onTouchMove = ( event: TouchEvent ): void => { 
         event.preventDefault();
         this.onMouseMove(event.touches[0]);
     };
+
+    /**
+     * Action to take when a device screen is released after a swipe/touch
+     * @param event the event object
+     */
     onTouchEnd = ( event: TouchEvent ): void => { 
         event.preventDefault();
         this.onMouseMove(event.touches[0]);
     };
 
+    /**
+     * Sets and activates any default eventlisteners on arena
+     */
     setEventListeners = (): void => {
         document.addEventListener( 'touchstart', this.onTouchStart, false );
         document.addEventListener( 'touchmove', this.onTouchMove, false );
@@ -184,6 +229,9 @@ export abstract class Arena {
         window.addEventListener('resize', this.onWindowResize, false);
     }
 
+    /**
+     * Clears off any active default eventlisteners on arena
+     */
     clearEventListeners = (): void => {
         document.removeEventListener( 'touchstart', this.onTouchStart, false );
         document.removeEventListener( 'touchmove', this.onTouchMove, false );
@@ -195,9 +243,16 @@ export abstract class Arena {
         window.removeEventListener('resize', this.onWindowResize, false);
     }
 
+    /**
+     * Runs a pre-disposal sequence for an arena, disposing off eventlisteners
+     */
     packup(): void {
         this.clearEventListeners();
     }
+
+    /**
+     * Destroys an arena by disposing its renderer, mesh geometry materials
+     */
     destroy(): void {
         this.renderer.dispose()
 

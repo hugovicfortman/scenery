@@ -1,5 +1,5 @@
 import { Scene, PerspectiveCamera, WebGLRenderer, Vector3, Mesh, MeshBasicMaterial, PlaneGeometry, TextureLoader, FrontSide, AdditiveBlending } from "three";
-import { Arena } from "../arena";
+import { Arena } from "../components/arena";
 
 export class WorkdeskArena extends Arena {
 

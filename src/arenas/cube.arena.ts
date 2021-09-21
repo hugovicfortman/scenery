@@ -1,5 +1,5 @@
 import { Scene, PerspectiveCamera, WebGLRenderer, BoxGeometry, Mesh, MeshNormalMaterial } from "three";
-import { Arena } from "../arena";
+import { Arena } from "../components/arena";
 
 export class CubeArena extends Arena {
 

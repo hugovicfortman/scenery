@@ -1,5 +1,5 @@
 import { DefaultLoadingManager } from 'three';
-import { Arena } from '../arena';
+import { Arena } from '../components/arena';
 import Detector from './three-detector';
 
 export class Scenery {
