@@ -10,6 +10,7 @@ export abstract class Arena {
     }
 
     abstract needsLoading: boolean;
+    abstract focus: boolean;
     loaded = false;
     loadingTimeout = 30000;
 

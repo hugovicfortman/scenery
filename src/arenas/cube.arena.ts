@@ -52,6 +52,7 @@ export class CubeArena extends Arena {
     };
 
     needsLoading = false;
+    focus = true;
 
     // Updates scene...
     update = ( time: number ): void => {

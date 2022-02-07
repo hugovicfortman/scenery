@@ -2,6 +2,7 @@ import { Scene, PerspectiveCamera, WebGLRenderer, Vector3, Mesh, MeshBasicMateri
 import { Arena } from "../components/arena";
 
 export class WorkdeskArena extends Arena {
+    focus = false;
 
     private textureSrc = 'assets/static/images/scenery/';
     private targetCamera: Vector3;

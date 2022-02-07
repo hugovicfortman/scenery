@@ -3,6 +3,12 @@ import { Arena } from "../components/arena";
 
 export class MyNewArena extends Arena {
     needsLoading: boolean;
+    focus = false;
+
+    constructor( container: HTMLElement ) {
+        super(container);
+    }
+
     init(): void {
         if(this.isInitialized) {
             return;

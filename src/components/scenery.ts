@@ -106,6 +106,7 @@ export class Scenery {
             }
             this.currentArena = this.incomingArena;
             this.currentArena.init();
+            console.log(this.currentArena);
             this.currentArena.canvas.classList.add('preload');
             this.finishLoading(this.incomingArena)
                 .then(() => {
