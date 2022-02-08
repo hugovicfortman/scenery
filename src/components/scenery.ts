@@ -41,23 +41,27 @@ export class Scenery {
 
     setArena = (sceneIndex: number): void => console.log(sceneIndex)
 
-    setup(): void {
-        import("./arenafactory").then(factory => {
-                let currentArenaIndex = 0;
-                this.loadArena(currentArenaIndex, factory.getArena(currentArenaIndex, this.container));
-                this.transition();
-                const arenas = Array.from(Array(factory.getArenaCount()).keys())
-                this.setArena = (arenaIndex: number) => {
-                    if(arenaIndex in arenas && arenaIndex != currentArenaIndex) {
-                        this.loadArena(arenaIndex, factory.getArena(arenaIndex, this.container));
-                        this.transition();
-                        currentArenaIndex = arenaIndex;
+    setup(): Promise<void> {
+        return new Promise((resolve, reject) => {
+            import("./arenafactory").then(factory => {
+                    let currentArenaIndex = 0;
+                    this.loadArena(currentArenaIndex, factory.getArena(currentArenaIndex, this.container));
+                    this.transition();
+                    const arenas = Array.from(Array(factory.getArenaCount()).keys())
+                    this.setArena = (arenaIndex: number) => {
+                        if(arenaIndex in arenas && arenaIndex != currentArenaIndex) {
+                            this.loadArena(arenaIndex, factory.getArena(arenaIndex, this.container));
+                            this.transition();
+                            currentArenaIndex = arenaIndex;
+                        }
+                    };
+                    this.getArenaIndex = (): string[] => {
+                        return factory.getArenaIndex();
                     }
-                };
-                this.getArenaIndex = (): string[] => {
-                    return factory.getArenaIndex();
-                }
-            });
+                })
+            .then(() => resolve())
+            .catch(() => reject());
+        });
     }
 
     getArenaIndex = (): string[] => []
@@ -107,7 +111,7 @@ export class Scenery {
             this.currentArena = this.incomingArena;
             this.currentArena.init();
             console.log(this.currentArena);
-            this.currentArena.canvas.classList.add('preload');
+            this.currentArena.canvas().classList.add('preload');
             this.finishLoading(this.incomingArena)
                 .then(() => {
                     if(this.outgoingArena !== undefined) {
@@ -119,7 +123,7 @@ export class Scenery {
                             if(canDestroy) {
                                 this.outgoingArena.destroy();
                             }
-                            this.currentArena.canvas.classList.remove('preload');
+                            this.currentArena.canvas().classList.remove('preload');
                         });
                 })
                 .catch((e) => console.log(e));
@@ -129,7 +133,7 @@ export class Scenery {
     private fadeOutArena(e: Arena, time: number): Promise<boolean> {
         console.log('fadeout called on outgoing Arena');
         if(e != undefined) {
-            return this.fadeOut(e.canvas, time);
+            return this.fadeOut(e.canvas(), time);
         }else {
             console.log('no outgoing Arena');
             return new Promise((resolve) => resolve(false))

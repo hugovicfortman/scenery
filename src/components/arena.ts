@@ -5,7 +5,7 @@ export abstract class Arena {
     // Initialization monitor
     public isInitialized = false;
     private _isReinitialized: boolean;
-    public get isReinitialized(): boolean {
+    public isReinitialized(): boolean {
         return this._isReinitialized
     }
 
@@ -73,11 +73,11 @@ export abstract class Arena {
         this._container.appendChild( this.renderer.domElement );
     }
 
-    get canvas(): HTMLCanvasElement {
+    public canvas(): HTMLCanvasElement {
         return this.renderer.domElement
     }
 
-    get container(): HTMLElement {
+    public container(): HTMLElement {
         return this._container;
     }
 
