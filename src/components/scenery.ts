@@ -3,39 +3,42 @@ import { Arena } from '../components/arena';
 import Detector from './three-detector';
 
 export class Scenery {
-    private container: HTMLElement;
-    public components: {[key: string]: never};
-    private currentArena: Arena;
-    private incomingArena: Arena;
-    private outgoingArena: Arena;
+    private container: HTMLElement | undefined;
+    public components: { [key: string]: never };
+    private currentArena: Arena | undefined;
+    private incomingArena: Arena | undefined;
+    private outgoingArena: Arena | undefined;
     private arenaCache: Arena[] = [];
     private preloadStyleContent = 'canvas.preload{position:fixed;top:0;left:0;z-index:-1}';
 
-    init( container: HTMLElement ): void {
+    public constructor() {
+        this.components = {};
+    }
+
+    init(container: HTMLElement): void {
         this.container = container;
         this.initialize();
     }
 
     private initialize(): void {
         // Startup...
-        if(Detector.webgl)
-        {
+        if (Detector.webgl) {
             // Styling preloads
             const preloadStyle = document.createElement('style');
             preloadStyle.innerHTML = this.preloadStyleContent;
             document.body.appendChild(preloadStyle);
 
             // Loading...
-            DefaultLoadingManager.onProgress = ( item, loaded, total ) => {
+            DefaultLoadingManager.onProgress = (_, loaded, total) => {
                 console.log('loading manager progress triggered');
                 // All textures are done loading when loaded === total...
-                this.incomingArena.loaded = (loaded === total);
+                (this.incomingArena as Arena).loaded = (loaded === total);
             };
             this.currentArena = undefined;
         } else {
             // If WebGL is not supported...
             const warning = Detector.getWebGLErrorMessage();
-            this.container.appendChild(warning);
+            (this.container as HTMLElement).appendChild(warning);
         }
     }
 
@@ -44,23 +47,23 @@ export class Scenery {
     setup(): Promise<void> {
         return new Promise((resolve, reject) => {
             import("./arenafactory").then(factory => {
-                    let currentArenaIndex = 0;
-                    this.loadArena(currentArenaIndex, factory.getArena(currentArenaIndex, this.container));
-                    this.transition();
-                    const arenas = Array.from(Array(factory.getArenaCount()).keys())
-                    this.setArena = (arenaIndex: number) => {
-                        if(arenaIndex in arenas && arenaIndex != currentArenaIndex) {
-                            this.loadArena(arenaIndex, factory.getArena(arenaIndex, this.container));
-                            this.transition();
-                            currentArenaIndex = arenaIndex;
-                        }
-                    };
-                    this.getArenaIndex = (): string[] => {
-                        return factory.getArenaIndex();
+                let currentArenaIndex = 0;
+                this.loadArena(currentArenaIndex, factory.getArena(currentArenaIndex, (this.container as HTMLElement)));
+                this.transition();
+                const arenas = Array.from(Array(factory.getArenaCount()).keys())
+                this.setArena = (arenaIndex: number) => {
+                    if (arenaIndex in arenas && arenaIndex != currentArenaIndex) {
+                        this.loadArena(arenaIndex, factory.getArena(arenaIndex, (this.container as HTMLElement)));
+                        this.transition();
+                        currentArenaIndex = arenaIndex;
                     }
-                })
-            .then(() => resolve())
-            .catch(() => reject());
+                };
+                this.getArenaIndex = (): string[] => {
+                    return factory.getArenaIndex();
+                }
+            })
+                .then(() => resolve())
+                .catch(() => reject());
         });
     }
 
@@ -68,16 +71,16 @@ export class Scenery {
 
     private finishLoading(arena: Arena): Promise<void> {
         return new Promise((resolve, reject) => {
-            if(arena.needsLoading) {
+            if (arena.needsLoading) {
                 let loadingTime = 0;
                 const intervalTime = 500;
                 const wait = setInterval(() => {
-                    if(arena.loaded){
+                    if (arena.loaded) {
                         clearInterval(wait);
                         resolve()
                     } else {
                         loadingTime += intervalTime;
-                        if(loadingTime >= arena.loadingTimeout) {
+                        if (loadingTime >= arena.loadingTimeout) {
                             clearInterval(wait);
                             reject(); // Took too long to load
                         }
@@ -93,7 +96,7 @@ export class Scenery {
     // Objects are stored in a dictionary with the name, and retreived if called
     // again during runtime.
     loadArena(arenaIndex: number, arena: Arena): void {
-        if(this.arenaCache[arenaIndex] == undefined) {
+        if (this.arenaCache[arenaIndex] == undefined) {
             this.incomingArena = arena;
             this.arenaCache[arenaIndex] = arena;
         } else {
@@ -104,8 +107,8 @@ export class Scenery {
 
     /// Transition from an existing arena to the newly declared incoming arena
     private transition(): void {
-        if(this.incomingArena !== undefined) {
-            if(this.currentArena !== undefined) {
+        if (this.incomingArena !== undefined) {
+            if (this.currentArena !== undefined) {
                 this.outgoingArena = this.currentArena;
             }
             this.currentArena = this.incomingArena;
@@ -114,16 +117,16 @@ export class Scenery {
             this.currentArena.canvas().classList.add('preload');
             this.finishLoading(this.incomingArena)
                 .then(() => {
-                    if(this.outgoingArena !== undefined) {
+                    if (this.outgoingArena !== undefined) {
                         this.outgoingArena.packup();
                     }
                     // Execute whatever transition was meant to move us to the next screen.
-                    this.fadeOutArena(this.outgoingArena, 1)
-                        .then( (canDestroy) => { // If fadeout returns true, destroy old arena
-                            if(canDestroy) {
-                                this.outgoingArena.destroy();
+                    this.fadeOutArena((this.outgoingArena as Arena), 1)
+                        .then((canDestroy) => { // If fadeout returns true, destroy old arena
+                            if (canDestroy) {
+                                (this.outgoingArena as Arena).destroy();
                             }
-                            this.currentArena.canvas().classList.remove('preload');
+                            this.currentArena?.canvas().classList.remove('preload');
                         });
                 })
                 .catch((e) => console.log(e));
@@ -132,9 +135,9 @@ export class Scenery {
 
     private fadeOutArena(e: Arena, time: number): Promise<boolean> {
         console.log('fadeout called on outgoing Arena');
-        if(e != undefined) {
+        if (e != undefined) {
             return this.fadeOut(e.canvas(), time);
-        }else {
+        } else {
             console.log('no outgoing Arena');
             return new Promise((resolve) => resolve(false))
         }
@@ -145,7 +148,7 @@ export class Scenery {
         return new Promise((resolve) => {
             let opacity = InitialOpacity;
             const fading = setInterval(() => {
-                if(opacity > 0) {
+                if (opacity > 0) {
                     opacity -= InitialOpacity / 60;
                     e.style.opacity = `${opacity}`;
                 } else {

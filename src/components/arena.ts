@@ -4,7 +4,7 @@ export abstract class Arena {
 
     // Initialization monitor
     public isInitialized = false;
-    private _isReinitialized: boolean;
+    private _isReinitialized: boolean = false;
     public isReinitialized(): boolean {
         return this._isReinitialized
     }
@@ -21,38 +21,38 @@ export abstract class Arena {
     moveLeft = false;
     canJump = false;
     velocity = { x: 0, y: 0 };
-    mouse = { 
-        coordinates : { 
+    mouse = {
+        coordinates: {
             x: 0,
-            y: 0 
+            y: 0
         },
-        percentage : { 
+        percentage: {
             x: 0,
-            y: 0 
-        } 
+            y: 0
+        }
     };
     viewer = {
-        rho : 0,
+        rho: 0,
         phi: 0,
-        x:0,
-        y:50,
-        z:-200
+        x: 0,
+        y: 50,
+        z: -200
     };
     player = {
         jumpSpeed: 350
     }
 
-    scene: Scene;
-    renderer: WebGLRenderer;
-    camera: Camera;
+    scene: Scene | undefined;
+    renderer: WebGLRenderer | undefined;
+    camera: Camera | undefined;
 
     // Constructor setup with crucial objects for every canvas
-    constructor( private _container: HTMLElement ) {}
+    constructor(private _container: HTMLElement) { }
 
 
     // Initializes this scene
     abstract init(): void;
-    
+
     initialize(): void {
         this.isInitialized = true;
     }
@@ -70,11 +70,11 @@ export abstract class Arena {
         this.camera = camera;
     }
     placeRenderer = (): void => {
-        this._container.appendChild( this.renderer.domElement );
+        this._container.appendChild((this.renderer as WebGLRenderer).domElement);
     }
 
     public canvas(): HTMLCanvasElement {
-        return this.renderer.domElement
+        return (this.renderer as WebGLRenderer).domElement
     }
 
     public container(): HTMLElement {
@@ -83,12 +83,12 @@ export abstract class Arena {
 
     // Draws on Scene...
     render = (): void => {
-        this.renderer.render( this.scene, this.camera );
+        (this.renderer as WebGLRenderer).render((this.scene as Scene), (this.camera as Camera));
     };
 
 
     // Game Loop Logic [update, render, repeat]...
-    gameLoop( time: number ): void {
+    gameLoop(time: number): void {
         this.update(time);
         this.render();
     }
@@ -101,8 +101,8 @@ export abstract class Arena {
     onWindowResize = (): void => {
         const width = window.innerWidth;
         const height = window.innerHeight;
-        this.renderer.setSize( width, height );
-        if ( this.camera instanceof PerspectiveCamera) {
+        (this.renderer as WebGLRenderer).setSize(width, height);
+        if (this.camera instanceof PerspectiveCamera) {
             this.camera.aspect = (width / height);
             this.camera.updateProjectionMatrix();
         }
@@ -114,10 +114,10 @@ export abstract class Arena {
      *  also sets a boolean for jumping action using space in fp games
      * @param event the keyboard event
      */
-    onKeyDown = ( event: KeyboardEvent ): void => {
-        switch ( event.key ) {
+    onKeyDown = (event: KeyboardEvent): void => {
+        switch (event.key) {
             case "Space": // space
-                if ( this.canJump === true ) this.velocity.y += this.player.jumpSpeed;
+                if (this.canJump === true) this.velocity.y += this.player.jumpSpeed;
                 this.canJump = false;
                 break;
             case "Up": // up
@@ -144,8 +144,8 @@ export abstract class Arena {
      *  uses WASD and cursor keys settings by default
      * @param event the keyboard event
      */
-    onKeyUp = ( event: KeyboardEvent ): void => {
-        switch ( event.key ) {
+    onKeyUp = (event: KeyboardEvent): void => {
+        switch (event.key) {
             case "Up": // up
             case "w": // w
                 this.moveForward = false;
@@ -169,7 +169,7 @@ export abstract class Arena {
      * Action to take when a mouse is clicked, or screen tapped
      * @param event the event object
      */
-    onMouseDown = ( event: MouseEvent ): void => { 
+    onMouseDown = (event: MouseEvent): void => {
         event.preventDefault();
     };
 
@@ -177,13 +177,13 @@ export abstract class Arena {
      * Action to take when a mouse moves on the sreen
      * @param event the event object for either a touch or mouse movement
      */
-    onMouseMove = ( event: Touch | MouseEvent ): void => {
+    onMouseMove = (event: Touch | MouseEvent): void => {
 
         const windowHalfX = window.innerWidth >> 1;
         const windowHalfY = window.innerHeight >> 1;
 
-        this.mouse.coordinates.x = ( event.clientX - windowHalfX );
-        this.mouse.coordinates.y = ( event.clientY - windowHalfY );
+        this.mouse.coordinates.x = (event.clientX - windowHalfX);
+        this.mouse.coordinates.y = (event.clientY - windowHalfY);
 
         this.mouse.percentage.x = this.mouse.coordinates.x / (window.innerWidth / 2);
         this.mouse.percentage.y = this.mouse.coordinates.y / (window.innerHeight / 2);
@@ -194,7 +194,7 @@ export abstract class Arena {
      * Action to take at the beginning of touch/swipe of device screen
      * @param event the event object
      */
-    onTouchStart = ( event: TouchEvent ): void => { 
+    onTouchStart = (event: TouchEvent): void => {
         event.preventDefault();
     };
 
@@ -202,7 +202,7 @@ export abstract class Arena {
      * Action to take during a swipe of the device screen
      * @param event the event object
      */
-    onTouchMove = ( event: TouchEvent ): void => { 
+    onTouchMove = (event: TouchEvent): void => {
         event.preventDefault();
         this.onMouseMove(event.touches[0]);
     };
@@ -211,7 +211,7 @@ export abstract class Arena {
      * Action to take when a device screen is released after a swipe/touch
      * @param event the event object
      */
-    onTouchEnd = ( event: TouchEvent ): void => { 
+    onTouchEnd = (event: TouchEvent): void => {
         event.preventDefault();
         this.onMouseMove(event.touches[0]);
     };
@@ -220,13 +220,13 @@ export abstract class Arena {
      * Sets and activates any default eventlisteners on arena
      */
     setEventListeners = (): void => {
-        document.addEventListener( 'touchstart', this.onTouchStart, false );
-        document.addEventListener( 'touchmove', this.onTouchMove, false );
-        document.addEventListener( 'touchend', this.onTouchEnd, false );
-        document.addEventListener( 'mousedown', this.onMouseDown, false );
-        document.addEventListener( 'mousemove', this.onMouseMove, false );
-        document.addEventListener( 'keydown', this.onKeyDown, false );
-        document.addEventListener( 'keyup', this.onKeyUp, false );
+        document.addEventListener('touchstart', this.onTouchStart, false);
+        document.addEventListener('touchmove', this.onTouchMove, false);
+        document.addEventListener('touchend', this.onTouchEnd, false);
+        document.addEventListener('mousedown', this.onMouseDown, false);
+        document.addEventListener('mousemove', this.onMouseMove, false);
+        document.addEventListener('keydown', this.onKeyDown, false);
+        document.addEventListener('keyup', this.onKeyUp, false);
         window.addEventListener('resize', this.onWindowResize, false);
     }
 
@@ -234,13 +234,13 @@ export abstract class Arena {
      * Clears off any active default eventlisteners on arena
      */
     clearEventListeners = (): void => {
-        document.removeEventListener( 'touchstart', this.onTouchStart, false );
-        document.removeEventListener( 'touchmove', this.onTouchMove, false );
-        document.removeEventListener( 'touchend', this.onTouchEnd, false );
-        document.removeEventListener( 'mousedown', this.onMouseDown, false );
-        document.removeEventListener( 'mousemove', this.onMouseMove, false );
-        document.removeEventListener( 'keydown', this.onKeyDown, false );
-        document.removeEventListener( 'keyup', this.onKeyUp, false );
+        document.removeEventListener('touchstart', this.onTouchStart, false);
+        document.removeEventListener('touchmove', this.onTouchMove, false);
+        document.removeEventListener('touchend', this.onTouchEnd, false);
+        document.removeEventListener('mousedown', this.onMouseDown, false);
+        document.removeEventListener('mousemove', this.onMouseMove, false);
+        document.removeEventListener('keydown', this.onKeyDown, false);
+        document.removeEventListener('keyup', this.onKeyUp, false);
         window.removeEventListener('resize', this.onWindowResize, false);
     }
 
@@ -255,11 +255,11 @@ export abstract class Arena {
      * Destroys an arena by disposing its renderer, mesh geometry materials
      */
     destroy(): void {
-        this.renderer.dispose()
+        (this.renderer as WebGLRenderer).dispose();
 
         // dispose all geometry as well to kill persistance
-        this.scene.traverse(object => {
-            if(object instanceof Mesh) {
+        (this.scene as Scene).traverse(object => {
+            if (object instanceof Mesh) {
                 object.geometry.dispose();
                 if (object.material.isMaterial) {
                     object.material.dispose();
@@ -270,11 +270,11 @@ export abstract class Arena {
                     }
                 }
             }
-        })
+        });
 
-        this.renderer.forceContextLoss(); // Save on GL resources across Arenas
-        this.scene.clear();
-        this.renderer.domElement.parentNode.removeChild(this.renderer.domElement);
+        (this.renderer as WebGLRenderer).forceContextLoss(); // Save on GL resources across Arenas
+        (this.scene as Scene).clear();
+        (this.renderer as WebGLRenderer).domElement.parentNode?.removeChild((this.renderer as WebGLRenderer).domElement);
         this.isInitialized = false;
         this._isReinitialized = true;
         console.log('arena destroyed');

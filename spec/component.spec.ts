@@ -1,15 +1,20 @@
-import { Component } from "../src/components/component";
+import { describe } from "@jest/globals";
+import { Scenery } from "../src/components/scenery";
 
-let item: Component;
+let item: Scenery;
+let container: HTMLElement;
 
-describe('A suite is just a function', function () {
-  beforeEach(() => {
-    item = new Component();
-  });
+describe('Scenery', function () {
+    beforeEach(() => {
+        item = new Scenery();
+        container = document.createElement('div');
+    });
 
-  it('2 x 2 === 4', function () {
-    const res = item.testMultiplyMethod(2,2);
+    it('Initializes with no components', function () {
+        item.init(container);
 
-    expect(res).toBe(4);
-  });
+        console.log(item.components);
+
+        expect(item.components).toStrictEqual({});
+    });
 });

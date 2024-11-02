@@ -1,0 +1,26 @@
+html,
+body {
+  margin: 0;
+  padding: 0;
+}
+
+h1 {
+  color: rgba(220, 100, 100, 0.8);
+  font-size: 26px;
+
+  &:hover {
+    color: rgba(100, 100, 220, 0.8);
+  }
+}
+
+#setup {
+  position: fixed;
+  right: 50%;
+  bottom: 0;
+  transform: translateX(50%);
+}
+
+#transition {
+  position: fixed;
+  left: 0;
+}

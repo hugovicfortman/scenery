@@ -1,4 +1,4 @@
-// import './styles.scss';
+// import './style.scss';
 import { Scenery } from './components/scenery';
 
 
@@ -15,7 +15,7 @@ export default Scenery;
 // // "id" + Math.random().toString(16).slice(2);
 
 // document.querySelector('#transition')
-//     .addEventListener('click', () => scenery.setArena(1), false);
+//     ?.addEventListener('click', () => scenery.setArena(1), false);
 // document.querySelector('#setup')
-//     .addEventListener('click', () => scenery.setup(), false);
+//     ?.addEventListener('click', () => scenery.setup(), false);
 
